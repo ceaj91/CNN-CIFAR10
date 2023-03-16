@@ -17,7 +17,7 @@ DenseLayer::DenseLayer(int input_size, int output_size, int softmax) {
 
         // Postavljamo velicinu vectora weightsa da bude ista kao i input_size
         // Tako sto ga prosirujemo kontenerima koji sadrze 0
-        dense_weights.resize(input_size, std::vector<float>(output_size, 0));
+        dense_weights.resize(input_size, vector1D(output_size, 0));
 
         // Postavljamo velicinu vectora biasa da bude ista kao i output_size
         dense_bias.resize(output_size, 0);
@@ -32,7 +32,7 @@ void DenseLayer::load_dense_layer(const char* weights_file_name,const char* bias
         std::string line;
         std::getline(weights_file, line);
         std::istringstream iss(line);
-        std::vector<float> float_values;
+        vector1D float_values;
         for (int j = 0; j < output_size; ++j) {
               float value;
               iss >> value;
@@ -54,46 +54,57 @@ void DenseLayer::load_dense_layer(const char* weights_file_name,const char* bias
 
 
 
-vector1D DenseLayer::forward_prop(std::vector<float> input) {
+vector2D DenseLayer::forward_prop(vector2D input) {
+
+    int batch_size = input.size();
 
     // Napravi vector temp koji je size = output_size
     // Inicijalizuj 0 u svakom kontejneru
-    std::vector<float> temp(output_size, 0);
+    vector2D temp(batch_size, vector1D(output_size, 0));
+
 
     // Za svaku OUTPUT NODU mnozi svaku INPUT NODU sa odgovarajucim WEIGHTOM
     // I na kraju dodaje bias za svaku OUTPUT NODU
     // Ekvivalent: temp = np.dot(input[0:],self.dense_weights) + self.dense_bias
-    for (int i = 0; i < output_size; i++) {
-            for (int k = 0; k < input_size; k++) {
-                temp[i] += input[k] * dense_weights[k][i];
-            }
-        temp[i] += dense_bias[i];
+    for(int batch = 0; batch < batch_size; batch++){
+        for (int i = 0; i < output_size; i++) {
+                for (int k = 0; k < input_size; k++) {
+                    temp[batch][i] += input[batch][k] * dense_weights[k][i];
+                }
+            temp[batch][i] += dense_bias[i];
+        }
     }
 
     if (!softmax) {
-            for (int i = 0; i < output_size; i++) {
-                        // Sve negativne koef normalizuje na 0
-                        // Ekvivalent: output = np.maximum(0,temp)
-                    if(temp[i] < 0) temp[i] = 0;
+            for(int batch = 0; batch < batch_size; batch++){
+                for (int i = 0; i < output_size; i++) {
+                            // Sve negativne koef normalizuje na 0
+                            // Ekvivalent: output = np.maximum(0,temp)
+                        if(temp[batch][i] < 0) temp[batch][i] = 0;
+                }
             }
     } else {
             // Pronalazi najveci element u temp vectoru
-        float max_val = *max_element(temp.begin(), temp.end());
-        float sum_exp = 0.0;
-        for (int j = 0; j < output_size; j++) {
-                // Uredjuje temp vector tako sto od starih vrednosti njegovih kontejnera
-                // Oduzima vrednosti max elementa, i eksponira na e (skalira)
-                // Ova for petlja je ekvivalent:
-                // output = temp - np.max(temp,axis=1,keepdims=True)
-                // exp_out = np.exp(output)
-                // sum_exp_out = np.sum(exp_out,axis=1,keepdims=True)
-            temp[j] = exp(temp[j] - max_val);
-            sum_exp += temp[j];
-        }
-        for (int j = 0; j < output_size; j++) {
-                // Ekvivalent: output = exp_out / sum_exp_out
-            temp[j] /= sum_exp;
-        }
+            float max_val;
+            float sum_exp = 0.0;
+            for(int batch = 0; batch < batch_size; batch++){
+                max_val = *max_element(temp[batch].begin(), temp[batch].end());
+                sum_exp = 0.0;
+                for (int j = 0; j < output_size; j++) {
+                        // Uredjuje temp vector tako sto od starih vrednosti njegovih kontejnera
+                        // Oduzima vrednosti max elementa, i eksponira na e (skalira)
+                        // Ova for petlja je ekvivalent:
+                        // output = temp - np.max(temp,axis=1,keepdims=True)
+                        // exp_out = np.exp(output)
+                        // sum_exp_out = np.sum(exp_out,axis=1,keepdims=True)
+                    temp[batch][j] = exp(temp[batch][j] - max_val);
+                    sum_exp += temp[batch][j];
+                }
+                for (int j = 0; j < output_size; j++) {
+                        // Ekvivalent: output = exp_out / sum_exp_out
+                    temp[batch][j] /= sum_exp;
+                }
+            }
     }
     output = temp;
     return output;
@@ -101,19 +112,23 @@ vector1D DenseLayer::forward_prop(std::vector<float> input) {
 
 
 void DenseLayer::GetInfo() {
-	std::cout << "Input size is " << input_size << endl;
-	std::cout << "Output size is " << output_size << endl;
-	std::cout << "Softmax ? " << softmax << endl;
-	std::cout << setprecision(20);
-	std::cout << "First weight is: " << dense_weights[0][0] << endl;
-	std::cout << "First bias is: " << dense_bias[0] << endl;
+	std::cout << "Input size is " << input_size << std::endl;
+	std::cout << "Output size is " << output_size << std::endl;
+	std::cout << "Softmax ? " << softmax << std::endl;
+	std::cout << std::setprecision(20);
+	std::cout << "First weight is: " << dense_weights[0][0] << std::endl;
+	std::cout << "First bias is: " << dense_bias[0] << std::endl;
 }
 
 
 void DenseLayer::GetOutput() {
-	std::cout << "------------------" << endl;
-	std::cout << "Output is " << endl;
-	for(auto i = output.begin(); i != output.end(); ++i)
-		cout << *i << endl;
-	std::cout << "------------------" << endl;
+	std::cout << "------------------" << std::endl;
+	std::cout << "Output is " << std::endl;
+	for(int i = 0; i < output.size(); ++i){
+        for(int j = 0; j < output[0].size(); j++){
+            std::cout << output[i][j] << std::endl;
+        }
+	}
+
+	std::cout << "------------------" << std::endl;
 }

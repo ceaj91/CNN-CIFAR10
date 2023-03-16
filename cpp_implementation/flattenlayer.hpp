@@ -1,11 +1,13 @@
 #ifndef FLATTENLAYER_HPP_INCLUDED
 #define FLATTENLAYER_HPP_INCLUDED
 
+#include "common.hpp"
+
 class FlattenLayer {
 private:
-    std::vector<std::vector<float>> output;
+    vector2D output;
 public:
-    std::vector<std::vector<float>> forward_prop(std::vector<std::vector<std::vector<std::vector<float>>>> input);
+    vector2D forward_prop(vector4D input);
 };
 
 #endif // FLATTENLAYER_HPP_INCLUDED

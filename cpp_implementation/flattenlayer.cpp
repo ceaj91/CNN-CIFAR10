@@ -2,13 +2,14 @@
 #include <vector>
 #include <numeric>
 
+#include "common.hpp"
 #include "flattenlayer.hpp"
 
-std::vector<std::vector<float>> FlattenLayer::forward_prop(std::vector<std::vector<std::vector<std::vector<float>>>> input) {
+vector2D FlattenLayer::forward_prop(vector4D input) {
     std::vector<int> input_size = {(int)input.size(), (int)input[0].size(), (int)input[0][0].size(), (int)input[0][0][0].size()};
     int flattened_size = std::accumulate(input_size.begin() + 1, input_size.end(), 1, std::multiplies<int>());
 
-    std::vector<std::vector<float>> X_flat(input_size[0], std::vector<float>(flattened_size));
+    vector2D X_flat(input_size[0], vector1D(flattened_size));
 
     int flat_idx = 0;
     for (int i = 0; i < input_size[0]; i++) {

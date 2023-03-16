@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <random>
+
 #include "common.hpp"
 #include "MaxPoolLayer.hpp"
 
@@ -11,9 +12,9 @@ MaxPoolLayer::MaxPoolLayer(int param_pool_size) {
     pool_size = {param_pool_size, param_pool_size};
 }
 
-vector4D MaxPoolLayer::forward_prop(std::vector<std::vector<std::vector<std::vector<float> > > > input, std::vector<int> stride = {}) {
+vector4D MaxPoolLayer::forward_prop(vector4D input, std::vector<int> stride = {}) {
 
-    input_shape = {(int)input.size(),(int) input[0].size(),(int) input[0][0].size(),(int) input[0][0][0].size()};
+    input_shape = {(int)input.size(), (int)input[0].size(), (int)input[0][0].size(), (int)input[0][0][0].size()};
     int h_start;
     int h_end;
     int w_start;
@@ -23,16 +24,16 @@ vector4D MaxPoolLayer::forward_prop(std::vector<std::vector<std::vector<std::vec
     if (stride.empty()) {
         stride = pool_size;
     }
-    
+
     int output_height = std::floor((input_shape[1] - pool_size[0]) / stride[0]) + 1;
     int output_width = std::floor((input_shape[2] - pool_size[1]) / stride[1]) + 1;
     int output_channels = input_shape[3];
     output_shape = {input_shape[0], output_height, output_width, output_channels};
 
 
-    output.resize(output_shape[0], std::vector<std::vector<std::vector<float> > >(output_shape[1], std::vector<std::vector<float> >(output_shape[2], std::vector<float>(output_shape[3], 0))));
+    output.resize(output_shape[0], vector3D(output_shape[1], vector2D(output_shape[2], vector1D(output_shape[3], 0))));
 
-    std::vector<std::vector<float> > pool_region(pool_size[0], std::vector<float>(pool_size[1], 0));
+    vector2D pool_region(pool_size[0], vector1D(pool_size[1], 0));
 
     for (int b = 0; b < output_shape[0]; b++) {
         for (int h = 0; h < output_shape[1]; h++) {
