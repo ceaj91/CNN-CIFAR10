@@ -18,8 +18,8 @@ int main() {
 	vector4D output5;
 	vector4D output6;
 	vector2D output7;
-	vector1D output8;
-	vector1D output9;
+	vector2D output8;
+	vector2D output9;
 
 	vector4D slika(1,vector3D(32,vector2D(32,vector1D(3,0.0))));
 	ifstream file_slike;
@@ -86,14 +86,14 @@ int main() {
 		output5 = conv3.forward_prop(output4);
 		output6 = maxpool3.forward_prop(output5,{});
 		output7 = flatten1.forward_prop(output6);
-		output8 = dense1.forward_prop(output7[0]);
+		output8 = dense1.forward_prop(output7);
 		output9 = dense2.forward_prop(output8);
-		max=output9[0];
+		max=output9[0][0];
 		index=0;
 		for (int i = 1; i < 10; i++)
 		{
-			if(output9[i] > max){
-				max = output9[i];
+			if(output9[0][i] > max){
+				max = output9[0][i];
 				index=i;
 			}
 		}
