@@ -1,0 +1,7 @@
+U terminalu ukucati:
+
+kcachegrind <fajl koji zelite da vidite>
+
+Sta svaki fajl predstavlja:
+Kod svakog fajla postoji patern: callgrind_'broj slika'.out.'broj'. 
+ 
