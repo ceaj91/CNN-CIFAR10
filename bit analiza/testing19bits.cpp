@@ -138,7 +138,7 @@ int sc_main(int argc, char* argv[]) {
 				*/
 			}
 
-			//tacnost = broj_pogodaka/10000.0 * 100;
+			tacnost = broj_pogodaka/10.0 * 100;
 			//std::cout<<"Tacnost mreze ukupno: "<<tacnost<<std::endl;
 			file_info.open("bit_analiza.txt",ios::app);
 			file_info<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bita)"<<" daje tacnost : "<<tacnost<<"%"<<std::endl;
