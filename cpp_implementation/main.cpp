@@ -8,6 +8,9 @@
 #include "MaxPoolLayer.hpp"
 #include "flattenlayer.hpp"
 #include "denselayer.hpp"
+
+//enum CIFAR10 {AIRPLANE,AUTOMOBILE,BIRD,CAT,DEER,DOG,FROG,HORSE,SHIP,TRUCK};
+
 int main() {
 	//UCITAVANJE SLIKE NE RADI, DOTLE SI STIGAO  "slika.txt"
 	//kada ucitas sliku, implementiraj forward_propagation
@@ -30,10 +33,10 @@ int main() {
 	int labela;
 	int index=0;
 	float max=0;
-	double broj_pogodaka=0.0;
-	double min_tacnost=1.1;
 
-	const char *weights1 = "..//parametars/conv1/conv1_filters.txt";
+	
+
+	const char *weights1 = "../parametars/conv1/conv1_filters.txt";
 	const char *bias1 = "../parametars/conv1/conv1_bias.txt";
 	const char *weights2 = "../parametars/conv2/conv2_filters.txt";
 	const char *bias2 = "../parametars/conv2/conv2_bias.txt";
@@ -59,7 +62,7 @@ int main() {
 	dense1.load_dense_layer(dense1_weights,dense1_bias);
 	dense2.load_dense_layer(dense2_weights,dense2_bias);
 
-	for (int pic_num = 0; pic_num < 10000; pic_num++)
+	for (int pic_num = 0; pic_num < 10; pic_num++)
 	{
 		
 		file_labele >> labela;
@@ -73,9 +76,8 @@ int main() {
 					file_slike >> num;
 				
 					slika[0][row][column][channel] = num/255.0;
-				//std::cout<<slika[0][row][column][channel] <<" ";
 				}
-				//std::cout<<std::endl;
+		
 			}
 		}
 
@@ -97,28 +99,90 @@ int main() {
 				index=i;
 			}
 		}
+		cout<<"Slika : ";
+		switch(labela)
+	{
+		case 0:
+			cout<<"airplane";
+			break;
+		case 1:
+			cout<<"automobile";
+			break;
+		case 2:
+			cout<<"bird";
+			break;
+		case 3:
+			cout<<"cat";
+			break;
+		case 4:
+			cout<<"deer";
+			break;
+		case 5:
+			cout<<"dog";
+			break;
+		case 6:
+			cout<<"frog";
+			break;
+		case 7:
+			cout<<"horse";
+			break;
+		case 8:
+			cout<<"ship";
+			break;
+		case 9:
+			cout<<"truck"<<endl;
+			break;
+		default:
+			cout<<"Ne prepoznajem nista"<<endl;
+			break;				
+	}
+		
+		cout<<" Mreza prepoznaje : ";
+		switch(index)
+	{
+		case 0:
+			cout<<"airplane"<<endl;
+			break;
+		case 1:
+			cout<<"automobile"<<endl;
+			break;
+		case 2:
+			cout<<"bird"<<endl;
+			break;
+		case 3:
+			cout<<"cat"<<endl;
+			break;
+		case 4:
+			cout<<"deer"<<endl;
+			break;
+		case 5:
+			cout<<"dog"<<endl;
+			break;
+		case 6:
+			cout<<"frog"<<endl;
+			break;
+		case 7:
+			cout<<"horse"<<endl;
+			break;
+		case 8:
+			cout<<"ship"<<endl;
+			break;
+		case 9:
+			cout<<"truck"<<endl;
+			break;
+		default:
+			cout<<"Ne prepoznajem nista"<<endl;
+			break;				
+	}
+
+
+
 		if(labela == index){
-			if(max < min_tacnost){
-				min_tacnost = max;
-				std::cout<<min_tacnost<<" ";
-			}
-			broj_pogodaka++;
 			std::cout<<pic_num<<". POGODAK!"<<std::endl;
-			
 		}
 		else
 			std::cout<<pic_num<<". PROMASAJ!"<<std::endl;
 	}
-	
- 	
-	std::cout<<"Tacnos mreze: "<<broj_pogodaka/10000.0 * 100<<std::endl;
-	std::cout<<"Minimal treshold:"<<min_tacnost<<std::endl;
-	
-	
-
-
-
-
 	
 	
 	return 0;
