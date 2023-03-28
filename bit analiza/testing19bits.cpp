@@ -6,9 +6,9 @@
 #include <cstdio>
 #include "common.hpp"
 #include <iomanip>
-#include "MaxPoolLayer.hpp"
-#include "flattenlayer.hpp"
-#include "denselayer.hpp"
+#include "../cpp_implementation/MaxPoolLayer.hpp"
+#include "../cpp_implementation/flattenlayer.hpp"
+#include "../cpp_implementation/denselayer.hpp"
 int sc_main(int argc, char* argv[]) {
 	//UCITAVANJE SLIKE NE RADI, DOTLE SI STIGAO  "slika.txt"
 	//kada ucitas sliku, implementiraj forward_propagation
@@ -35,21 +35,21 @@ int sc_main(int argc, char* argv[]) {
 	double tacnost;
 	int W;
 	int F;
-	const char *weights1 = "../../CNN-CIFAR10/parametars/conv1/conv1_filters.txt";
-	const char *bias1 = "../../CNN-CIFAR10/parametars/conv1/conv1_bias.txt";
-	const char *weights2 = "../../CNN-CIFAR10/parametars/conv2/conv2_filters.txt";
-	const char *bias2 = "../../CNN-CIFAR10/parametars/conv2/conv2_bias.txt";
-	const char *weights3 = "../../CNN-CIFAR10/parametars/conv3/conv3_filters.txt";
-	const char *bias3 = "../../CNN-CIFAR10/parametars/conv3/conv3_bias.txt";
-	const char *dense1_weights = "../../CNN-CIFAR10/parametars/dense1/dense1_weights.txt";
-	const char *dense1_bias = "../../CNN-CIFAR10/parametars/dense1/dense1_bias.txt";
-	const char *dense2_weights = "../../CNN-CIFAR10/parametars/dense2/dense2_weights.txt";
-	const char *dense2_bias = "../../CNN-CIFAR10/parametars/dense2/dense2_bias.txt";
+	const char *weights1 = "../parametars/conv1/conv1_filters.txt";
+	const char *bias1 = "../parametars/conv1/conv1_bias.txt";
+	const char *weights2 = "../parametars/conv2/conv2_filters.txt";
+	const char *bias2 = "../parametars/conv2/conv2_bias.txt";
+	const char *weights3 = "../parametars/conv3/conv3_filters.txt";
+	const char *bias3 = "../parametars/conv3/conv3_bias.txt";
+	const char *dense1_weights = "../parametars/dense1/dense1_weights.txt";
+	const char *dense1_bias = "../parametars/dense1/dense1_bias.txt";
+	const char *dense2_weights = "../parametars/dense2/dense2_weights.txt";
+	const char *dense2_bias = "../parametars/dense2/dense2_bias.txt";
 
 	W=18;
 	F=4;
 
-	for(int s = 14; s<=14;s++)
+	for(int s = 14; s<=19;s++)
 	{
 		for(int b=3;b<=5;b++)
 		{
@@ -76,7 +76,7 @@ int sc_main(int argc, char* argv[]) {
 			cout<<"Format: "<<F<<"."<<W-F<<endl;
 			file_slike.open("slike.txt");
 			file_labele.open("labele.txt");
-			for (int pic_num = 0; pic_num < 10000; pic_num++)
+			for (int pic_num = 0; pic_num < 10; pic_num++)
 			{
 				
 				file_labele >> labela;
@@ -128,16 +128,18 @@ int sc_main(int argc, char* argv[]) {
 				}
 				//else
 				//	std::cout<<pic_num<<". PROMASAJ!"<<std::endl;
+			/*
 				if((pic_num+1) % 100 == 0)
 				{
 					
 					std::cout<<"Tacnost mreze posle "<<pic_num+1<<" slika: "<<broj_pogodaka/((pic_num+1)*1.0)*100<<"%"<<std::endl;
 					
 				}
+				*/
 			}
 
-			tacnost = broj_pogodaka/10000.0 * 100;
-			std::cout<<"Tacnost mreze ukupno: "<<tacnost<<std::endl;
+			//tacnost = broj_pogodaka/10000.0 * 100;
+			//std::cout<<"Tacnost mreze ukupno: "<<tacnost<<std::endl;
 			file_info.open("bit_analiza.txt",ios::app);
 			file_info<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bita)"<<" daje tacnost : "<<tacnost<<"%"<<std::endl;
 			std::cout<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bita)"<<" daje tacnost : "<<tacnost<<"%"<<std::endl;
