@@ -74,8 +74,8 @@ int sc_main(int argc, char* argv[]) {
 			dense2.load_dense_layer(dense2_weights,dense2_bias);
 			//conv1.print_weights();
 			cout<<"Format: "<<F<<"."<<W-F<<endl;
-			file_slike.open("slike.txt");
-			file_labele.open("labele.txt");
+			file_slike.open("../slike/slike.txt");
+			file_labele.open("../slike/labele.txt");
 			for (int pic_num = 0; pic_num < 10; pic_num++)
 			{
 				
