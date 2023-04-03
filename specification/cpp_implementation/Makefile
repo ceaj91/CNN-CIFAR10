@@ -22,7 +22,7 @@ $(EXECUTABLE): $(OBJECTS)
 
 # Compile target
 .cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@ 
 
 # Clean target
 clean:

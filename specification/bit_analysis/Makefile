@@ -11,13 +11,13 @@ CFLAGS=-c -Wall -I$(SYSTEMC_HOME)/include
 LDFLAGS=-L$(SYSTEMC_HOME)/lib-linux64 -lsystemc
 
 # Source files
-SOURCES=testing19bits.cpp ConvLayer.cpp ../cpp_implementation/denselayer.cpp ../cpp_implementation/flattenlayer.cpp ../cpp_implementation/MaxPoolLayer.cpp
+SOURCES=main.cpp ConvLayer.cpp ../cpp_implementation/denselayer.cpp ../cpp_implementation/flattenlayer.cpp ../cpp_implementation/MaxPoolLayer.cpp
 
 # Object files
 OBJECTS=$(SOURCES:.cpp=.o)
 
 # Executable name
-EXECUTABLE=testing19bits
+EXECUTABLE=test
 
 # Default target
 all: $(SOURCES) $(EXECUTABLE)

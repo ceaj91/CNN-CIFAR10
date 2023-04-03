@@ -24,16 +24,14 @@ int main() {
 	vector4D slika(1,vector3D(32,vector2D(32,vector1D(3,0.0))));
 	ifstream file_slike;
 	ifstream file_labele;
-	file_slike.open("../slike/slike.txt");
-	file_labele.open("../slike/labele.txt");
+
 	double num;
-	int labela;
+	int label;
 	int index=0;
 	float max=0;
-	double broj_pogodaka=0.0;
-	double min_tacnost=1.1;
+	double correct_predictions=0.0;
 
-	const char *weights1 = "..//parametars/conv1/conv1_filters.txt";
+	const char *weights1 = "../parametars/conv1/conv1_filters.txt";
 	const char *bias1 = "../parametars/conv1/conv1_bias.txt";
 	const char *weights2 = "../parametars/conv2/conv2_filters.txt";
 	const char *bias2 = "../parametars/conv2/conv2_bias.txt";
@@ -43,6 +41,11 @@ int main() {
 	const char *dense1_bias = "../parametars/dense1/dense1_bias.txt";
 	const char *dense2_weights = "../parametars/dense2/dense2_weights.txt";
 	const char *dense2_bias = "../parametars/dense2/dense2_bias.txt";
+	const char *pictures = "../slike/slike.txt";
+	const char *labels = "../slike/labele.txt";
+
+	file_slike.open(pictures);
+	file_labele.open(labels);
 	ConvLayer conv1(3,3,32);
 	MaxPoolLayer maxpool1(2);
 	ConvLayer conv2(3,32,32);
@@ -98,22 +101,16 @@ int main() {
 			}
 		}
 		if(labela == index){
-			if(max < min_tacnost){
-				min_tacnost = max;
-				std::cout<<min_tacnost<<" ";
-			}
-			broj_pogodaka++;
-			std::cout<<pic_num<<". POGODAK!"<<std::endl;
+			correct_predictions++;
+			std::cout<<pic_num<<". CORECT!"<<std::endl;
 			
 		}
 		else
-			std::cout<<pic_num<<". PROMASAJ!"<<std::endl;
+			std::cout<<pic_num<<". WRONG!"<<std::endl;
 	}
 	
  	
-	std::cout<<"Tacnos mreze: "<<broj_pogodaka/10000.0 * 100<<std::endl;
-	std::cout<<"Minimal treshold:"<<min_tacnost<<std::endl;
-	
+	std::cout<<"CNN accuracy: "<<correct_predictions/10000.0 * 100<<std::endl;	
 	
 
 

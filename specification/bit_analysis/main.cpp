@@ -22,32 +22,35 @@ int sc_main(int argc, char* argv[]) {
 	vector2D output8;
 	vector2D output9;
 
+	char  *main_file;
+	string line;
+	vector<string> files_name;
+
 	vector4D slika(1,vector3D(32,vector2D(32,vector1D(3,0.0))));
 	ifstream file_slike;
 	ifstream file_labele;
+	ifstream input_files;
 	ofstream file_info;
+
 	double num;
-	int labela;
+	int label;
 	int index=0;
 	float max=0;
-	double broj_pogodaka=0.0;
-	double min_tacnost=1.1;
-	double tacnost;
+	double num_correct=0.0;
+	double accuracy;
 	int W;
 	int F;
-	const char *weights1 = "../parametars/conv1/conv1_filters.txt";
-	const char *bias1 = "../parametars/conv1/conv1_bias.txt";
-	const char *weights2 = "../parametars/conv2/conv2_filters.txt";
-	const char *bias2 = "../parametars/conv2/conv2_bias.txt";
-	const char *weights3 = "../parametars/conv3/conv3_filters.txt";
-	const char *bias3 = "../parametars/conv3/conv3_bias.txt";
-	const char *dense1_weights = "../parametars/dense1/dense1_weights.txt";
-	const char *dense1_bias = "../parametars/dense1/dense1_bias.txt";
-	const char *dense2_weights = "../parametars/dense2/dense2_weights.txt";
-	const char *dense2_bias = "../parametars/dense2/dense2_bias.txt";
 
-	W=18;
-	F=4;
+	main_file = argv[1]; 
+	
+	input_files.open(main_file);
+	//reading paths of files for pictures, labels, and cnn parametars
+	while(getline(input_files,line))
+	{
+		files_name.push_back(line);
+	}
+	input_files.close();
+
 
 	for(int s = 14; s<=19;s++)
 	{
@@ -55,8 +58,8 @@ int sc_main(int argc, char* argv[]) {
 		{
 			W=s;
 			F=b;
-			broj_pogodaka=0;
-			tacnost=0;
+			num_correct=0;
+			accuracy=0;
 			ConvLayer conv1(3,3,32,"same",W,F);
 			MaxPoolLayer maxpool1(2);
 			ConvLayer conv2(3,32,32,"same",W,F);
@@ -67,20 +70,19 @@ int sc_main(int argc, char* argv[]) {
 			DenseLayer dense1(1024,512,0);
 			DenseLayer dense2(512,10,1);
 
-			conv1.load_weights(weights1,bias1);
-			conv2.load_weights(weights2,bias2);
-			conv3.load_weights(weights3,bias3);
-			dense1.load_dense_layer(dense1_weights,dense1_bias);
-			dense2.load_dense_layer(dense2_weights,dense2_bias);
+			conv1.load_weights(files_name[0].c_str(),files_name[1].c_str());
+			conv2.load_weights(files_name[2].c_str(),files_name[3].c_str());
+			conv3.load_weights(files_name[4].c_str(),files_name[5].c_str());
+			dense1.load_dense_layer(files_name[6].c_str(),files_name[7].c_str());
+			dense2.load_dense_layer(files_name[8].c_str(),files_name[9].c_str());
 			//conv1.print_weights();
 			cout<<"Format: "<<F<<"."<<W-F<<endl;
-			file_slike.open("../slike/slike.txt");
-			file_labele.open("../slike/labele.txt");
+			file_slike.open(files_name[10].c_str());
+			file_labele.open(files_name[11].c_str());
 			for (int pic_num = 0; pic_num < 10; pic_num++)
 			{
 				
-				file_labele >> labela;
-				//cout <<"labela:"<<labela<<" ";
+				file_labele >> label;
 				for (int channel = 0; channel < INPUT_CHANNEL_SIZE; channel++)
 				{
 				
@@ -119,30 +121,17 @@ int sc_main(int argc, char* argv[]) {
 						index=i;
 					}
 				}
-				//cout<<"index: "<<index<<" ";
-				if(labela == index){
+				if(label == index){
 					
-					broj_pogodaka++;
-					//std::cout<<pic_num<<". POGODAK!"<<std::endl;
-					
+					num_correct++;					
 				}
-				//else
-				//	std::cout<<pic_num<<". PROMASAJ!"<<std::endl;
-			/*
-				if((pic_num+1) % 100 == 0)
-				{
-					
-					std::cout<<"Tacnost mreze posle "<<pic_num+1<<" slika: "<<broj_pogodaka/((pic_num+1)*1.0)*100<<"%"<<std::endl;
-					
-				}
-				*/
+		
 			}
 
-			tacnost = broj_pogodaka/10.0 * 100;
-			//std::cout<<"Tacnost mreze ukupno: "<<tacnost<<std::endl;
-			file_info.open("bit_analiza.txt",ios::app);
-			file_info<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bita)"<<" daje tacnost : "<<tacnost<<"%"<<std::endl;
-			std::cout<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bita)"<<" daje tacnost : "<<tacnost<<"%"<<std::endl;
+			accuracy = num_correct/10.0 * 100;
+			file_info.open("bit_analysis.txt",ios::app);
+			file_info<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bits)"<<" accuracy : "<<accuracy<<"%"<<std::endl;
+			std::cout<<"Format: "<<F<<"."<<W-F<<" ("<<s<<" bits)"<<" accuracy : "<<accuracy<<"%"<<std::endl;
 			file_info.close();
 			file_slike.close();
 			file_labele.close();

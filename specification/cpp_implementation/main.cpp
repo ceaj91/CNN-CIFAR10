@@ -11,9 +11,8 @@
 
 //enum CIFAR10 {AIRPLANE,AUTOMOBILE,BIRD,CAT,DEER,DOG,FROG,HORSE,SHIP,TRUCK};
 
-int main() {
-	//UCITAVANJE SLIKE NE RADI, DOTLE SI STIGAO  "slika.txt"
-	//kada ucitas sliku, implementiraj forward_propagation
+int main(int argc, char *argv[]) {
+	
 	vector4D output;
 	vector4D output2;
 	vector4D output3;
@@ -24,28 +23,31 @@ int main() {
 	vector2D output8;
 	vector2D output9;
 
-	vector4D slika(1,vector3D(32,vector2D(32,vector1D(3,0.0))));
+	vector4D picture(1,vector3D(32,vector2D(32,vector1D(3,0.0))));
 	ifstream file_slike;
 	ifstream file_labele;
-	file_slike.open("../slike/slike.txt");
-	file_labele.open("../slike/labele.txt");
+	ifstream input_files;
+
+	char  *main_file;
+	std::vector<string> files_name;
+
 	double num;
-	int labela;
+	string line;
+	int label;
 	int index=0;
 	float max=0;
 
+	main_file = argv[1]; 
+	
+	input_files.open(main_file);
+	//reading paths of files for pictures, labels, and cnn parametars
+	while(getline(input_files,line))
+	{
+		files_name.push_back(line);
+	}
+	input_files.close();
 	
 
-	const char *weights1 = "../parametars/conv1/conv1_filters.txt";
-	const char *bias1 = "../parametars/conv1/conv1_bias.txt";
-	const char *weights2 = "../parametars/conv2/conv2_filters.txt";
-	const char *bias2 = "../parametars/conv2/conv2_bias.txt";
-	const char *weights3 = "../parametars/conv3/conv3_filters.txt";
-	const char *bias3 = "../parametars/conv3/conv3_bias.txt";
-	const char *dense1_weights = "../parametars/dense1/dense1_weights.txt";
-	const char *dense1_bias = "../parametars/dense1/dense1_bias.txt";
-	const char *dense2_weights = "../parametars/dense2/dense2_weights.txt";
-	const char *dense2_bias = "../parametars/dense2/dense2_bias.txt";
 	ConvLayer conv1(3,3,32);
 	MaxPoolLayer maxpool1(2);
 	ConvLayer conv2(3,32,32);
@@ -56,16 +58,17 @@ int main() {
 	DenseLayer dense1(1024,512,0);
 	DenseLayer dense2(512,10,1);
 
-	conv1.load_weights(weights1,bias1);
-	conv2.load_weights(weights2,bias2);
-	conv3.load_weights(weights3,bias3);
-	dense1.load_dense_layer(dense1_weights,dense1_bias);
-	dense2.load_dense_layer(dense2_weights,dense2_bias);
-
+	conv1.load_weights(files_name[0].c_str(),files_name[1].c_str());
+	conv2.load_weights(files_name[2].c_str(),files_name[3].c_str());
+	conv3.load_weights(files_name[4].c_str(),files_name[5].c_str());
+	dense1.load_dense_layer(files_name[6].c_str(),files_name[7].c_str());
+	dense2.load_dense_layer(files_name[8].c_str(),files_name[9].c_str());
+	file_slike.open(files_name[10].c_str());
+	file_labele.open(files_name[11].c_str());
 	for (int pic_num = 0; pic_num < 10; pic_num++)
 	{
 		
-		file_labele >> labela;
+		file_labele >> label;
 		for (int channel = 0; channel < INPUT_CHANNEL_SIZE; channel++)
 		{
 		
@@ -75,13 +78,13 @@ int main() {
 				{
 					file_slike >> num;
 				
-					slika[0][row][column][channel] = num/255.0;
+					picture[0][row][column][channel] = num/255.0;
 				}
 		
 			}
 		}
 
-		output = conv1.forward_prop(slika);
+		output = conv1.forward_prop(picture);
 		output2 = maxpool1.forward_prop(output,{});
 		output3 = conv2.forward_prop(output2);
 		output4 = maxpool2.forward_prop(output3,{});
@@ -99,8 +102,8 @@ int main() {
 				index=i;
 			}
 		}
-		cout<<"Slika : ";
-		switch(labela)
+		cout<<"Picture : ";
+		switch(label)
 	{
 		case 0:
 			cout<<"airplane";
@@ -130,14 +133,14 @@ int main() {
 			cout<<"ship";
 			break;
 		case 9:
-			cout<<"truck"<<endl;
+			cout<<"truck";
 			break;
 		default:
-			cout<<"Ne prepoznajem nista"<<endl;
+			cout<<"NULL";
 			break;				
 	}
 		
-		cout<<" Mreza prepoznaje : ";
+		cout<<" Prediction : ";
 		switch(index)
 	{
 		case 0:
@@ -171,19 +174,20 @@ int main() {
 			cout<<"truck"<<endl;
 			break;
 		default:
-			cout<<"Ne prepoznajem nista"<<endl;
+			cout<<"NULL"<<endl;
 			break;				
 	}
 
 
 
-		if(labela == index){
-			std::cout<<pic_num<<". POGODAK!"<<std::endl;
+		if(label == index){
+			std::cout<<pic_num<<". CORRECT!"<<std::endl;
 		}
 		else
-			std::cout<<pic_num<<". PROMASAJ!"<<std::endl;
+			std::cout<<pic_num<<". WRONG!"<<std::endl;
 	}
 	
-	
+	file_slike.close();
+	file_labele.close();
 	return 0;
 }
